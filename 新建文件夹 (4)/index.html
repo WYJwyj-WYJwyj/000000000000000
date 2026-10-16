@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级介绍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 密码登录弹窗 */
+        .login-box{
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background-color:rgba(0,0,0,0.75);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+        }
+        .login-card{
+            background:#fff;
+            padding:40px 30px;
+            border-radius:14px;
+            width:90%;
+            max-width:420px;
+            text-align:center;
+        }
+        .login-card h2{
+            color:#2060dd;
+            margin-bottom:20px;
+        }
+        .login-card input{
+            width:100%;
+            padding:12px 16px;
+            font-size:1rem;
+            border:1px solid #b8d0f5;
+            border-radius:8px;
+            margin-bottom:16px;
+        }
+        .login-card button{
+            width:100%;
+            padding:12px;
+            background:#2060dd;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:1rem;
+            cursor:pointer;
+        }
+        .login-card button:hover{
+            background:#4080ff;
+        }
+        .tip{
+            color:red;
+            margin-top:10px;
+            display:none;
+        }
+        .main-page{
+            display:none;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: #2060dd;
+            position: sticky;
+            top:0;
+            z-index:99;
+        }
+        .nav-wrap{
+            max-width:1000px;
+            margin:0 auto;
+            display:flex;
+            justify-content:center;
+            flex-wrap:wrap;
+        }
+        nav a{
+            color:#fff;
+            text-decoration:none;
+            padding:14px 20px;
+            display:block;
+        }
+        nav a:hover{
+            background:#4080ff;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4080ff, #2060dd);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card h2 {
+            color: #2060dd;
+            border-left: 5px solid #4080ff;
+            padding-left: 12px;
+            margin-bottom: 16px;
+        }
+        .class-slogan {
+            background-color: #e8f1ff;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2060dd;
+            border-radius: 10px;
+        }
+        .student-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top:15px;
+        }
+        .student-item {
+            background-color: #f4f8ff;
+            padding:8px 16px;
+            border-radius: 20px;
+        }
+        footer {
+            text-align: center;
+            padding:20px;
+            color:#666;
+            font-size:0.9rem;
+        }
+
+        /* ==========轮播图========== */
+        .slider{
+            width:100%;
+            height:360px;
+            overflow:hidden;
+            position:relative;
+            border-radius:8px;
+            margin-top:12px;
+        }
+        .slider-outer{
+            display:flex;
+            height:100%;
+            transition:0.5s ease all;
+        }
+        .slide-item{
+            min-width:100%;
+            height:100%;
+            cursor: zoom‑in;
+        }
+        .slide-item img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .slide-prev,.slide-next{
+            position:absolute;
+            top:50%;
+            transform:translateY(-50%);
+            width:40px;
+            height:40px;
+            background:rgba(255,255,255,0.65);
+            border-radius:50%;
+            text-align:center;
+            line-height:40px;
+            font-size:22px;
+            cursor:pointer;
+            user-select:none;
+            z-index:10;
+        }
+        .slide-prev{left:12px;}
+        .slide-next{right:12px;}
+        .dots-box{
+            position:absolute;
+            bottom:12px;
+            width:100%;
+            text-align:center;
+            z-index:10;
+        }
+        .dot{
+            display:inline-block;
+            width:11px;
+            height:11px;
+            border-radius:50%;
+            background:rgba(255,255,255,0.45);
+            margin:0 4px;
+            cursor:pointer;
+        }
+        .dot.active{
+            background:#ffffff;
+        }
+
+        /* ==========图片放大灯箱========== */
+        .lightbox{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.88);
+            z-index:10000;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+        .lightbox-img{
+            max-width:95%;
+            max-height:95vh;
+        }
+        .lightbox-close{
+            position:absolute;
+            top:20px;
+            right:30px;
+            color:#fff;
+            font-size:40px;
+            cursor:pointer;
+            user-select:none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 密码登录弹窗 -->
+    <div class="login-box" id="loginBox">
+        <div class="login-card">
+            <h2>请输入访问密码</h2>
+            <input type="password" id="pwdInput" placeholder="输入密码">
+            <button onclick="checkPassword()">确认进入</button>
+            <div class="tip" id="errorTip">密码错误，请重新输入！</div>
+        </div>
+    </div>
+
+    <!-- 图片放大弹窗 -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-close" id="lbClose">&times;</div>
+        <img class="lightbox-img" id="lbImg" src="" alt="放大图片">
+    </div>
+
+    <div class="main-page" id="mainContent">
+
+        <!-- 导航栏 -->
+        <nav>
+            <div class="nav-wrap">
+                <a href="#intro">班级简介</a>
+                <a href="#slogan">班级口号</a>
+                <a href="#member">班级成员</a>
+                <a href="#gallery">班级风采</a>
+            </div>
+        </nav>
+
+        <header>
+            <h1>初一年级2603班</h1>
+            <p>同心共进，向阳成长</p>
+        </header>
+
+        <div class="container">
+
+            <!-- 班级简介 -->
+            <div class="card" id="intro">
+                <h2>班级简介</h2>
+                <p>
+                    我们是一个团结友爱、积极向上的集体。在学习上，大家互帮互助，勤学善思；在活动中，同学们齐心协力，勇于拼搏。
+                    每一位同学都在这里收获知识、收获友谊，努力成为更好的自己。我们热爱这个大家庭，一起奔赴属于我们的美好未来！
+                </p>
+            </div>
+
+            <!-- 班级口号 -->
+            <div class="card" id="slogan">
+                <h2>班级口号</h2>
+                <div class="class-slogan">
+                    笃行致远，不负韶华；乘风破浪，再创辉煌！
+                </div>
+            </div>
+
+            <!-- 班级成员 -->
+            <div class="card" id="member">
+                <h2>班级成员</h2>
+                <p>班主任：刘老师</p>
+                <div class="student-list">
+                    <div class="student-item">无</div>
+                    <div class="student-item">无</div>
+                    <div class="student-item">无</div>
+                    <div class="student-item">无</div>
+                    <div class="student-item">无</div>
+                    <div class="student-item">无</div>
+                </div>
+            </div>
+
+            <!-- 班级风采：轮播11张图，支持点击放大 -->
+            <div class="card" id="gallery">
+                <h2>班级风采</h2>
+                <p>课堂上认真思考，运动会奋力奔跑，文艺活动尽情展示。我们用汗水书写青春，用笑容记录时光。<br>💡提示：点击图片可以放大查看。</p>
+
+                <div class="slider">
+                    <div class="slider-outer">
+                        <div class="slide-item"><img src="pic1.jpg" alt="班级风采1"></div>
+                        <div class="slide-item"><img src="pic2.jpg" alt="班级风采2"></div>
+                        <div class="slide-item"><img src="pic3.jpg" alt="班级风采3"></div>
+                        <div class="slide-item"><img src="pic4.jpg" alt="班级风采4"></div>
+                        <div class="slide-item"><img src="pic5.jpg" alt="班级风采5"></div>
+                        <div class="slide-item"><img src="pic6.jpg" alt="班级风采6"></div>
+                        <div class="slide-item"><img src="pic7.jpg" alt="班级风采7"></div>
+                        <div class="slide-item"><img src="pic8.jpg" alt="班级风采8"></div>
+                        <div class="slide-item"><img src="pic9.jpg" alt="班级风采9"></div>
+                        <div class="slide-item"><img src="pic10.jpg" alt="班级风采10"></div>
+                        <div class="slide-item"><img src="pic11.jpg" alt="班级风采11"></div>
+                    </div>
+                    <div class="slide-prev">&lt;</div>
+                    <div class="slide-next">&gt;</div>
+                    <div class="dots-box">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                        <span class="dot" data-index="3"></span>
+                        <span class="dot" data-index="4"></span>
+                        <span class="dot" data-index="5"></span>
+                        <span class="dot" data-index="6"></span>
+                        <span class="dot" data-index="7"></span>
+                        <span class="dot" data-index="8"></span>
+                        <span class="dot" data-index="9"></span>
+                        <span class="dot" data-index="10"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            初一年级2603班 班级主页 ©2026
+        </footer>
+    </div>
+
+<script>
+    // SHA256哈希
+    async function sha256(str) {
+        const enc = new TextEncoder();
+        const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    const correctHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+
+    async function checkPassword(){
+        const input = document.getElementById('pwdInput').value;
+        const errDom = document.getElementById('errorTip');
+        const inputHash = await sha256(input);
+        if(inputHash === correctHash){
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            startSlider();
+            initLightBox(); //初始化放大功能
+        }else{
+            errDom.style.display = 'block';
+        }
+    }
+    document.getElementById("pwdInput").addEventListener("keydown", async e=>{
+        if(e.key === "Enter") await checkPassword();
+    });
+
+    // =========轮播=========
+    let sliderWrap, slideTotal, curIndex = 0, slideTimer;
+    function startSlider(){
+        sliderWrap = document.querySelector('.slider-outer');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.querySelector('.slide-prev');
+        const nextBtn = document.querySelector('.slide-next');
+        slideTotal = document.querySelectorAll('.slide-item').length;
+
+        function render(){
+            sliderWrap.style.transform = `translateX(-${curIndex * 100}%)`;
+            dots.forEach(d=>d.classList.remove('active'));
+            dots[curIndex].classList.add('active');
+        }
+        function autoPlay(){
+            slideTimer = setInterval(()=>{
+                curIndex = (curIndex+1)%slideTotal;
+                render();
+            },3000);
+        }
+        prevBtn.onclick = ()=>{
+            clearInterval(slideTimer);
+            curIndex = (curIndex -1 + slideTotal) % slideTotal; render(); autoPlay();
+        }
+        nextBtn.onclick = ()=>{
+            clearInterval(slideTimer);
+            curIndex = (curIndex +1) % slideTotal; render(); autoPlay();
+        }
+        dots.forEach((dot,i)=>{
+            dot.onclick = ()=>{
+                clearInterval(slideTimer); curIndex=i; render(); autoPlay();
+            }
+        })
+        const sliderDom = document.querySelector(".slider");
+        sliderDom.onmouseenter = ()=>clearInterval(slideTimer);
+        sliderDom.onmouseleave = ()=>autoPlay();
+        autoPlay();
+    }
+
+    // =========图片放大灯箱功能=========
+    function initLightBox(){
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+        const lbClose = document.getElementById('lbClose');
+        const slideImgs = document.querySelectorAll('.slide-item img');
+
+        //点击图片打开放大
+        slideImgs.forEach(img=>{
+            img.onclick = function(){
+                lbImg.src = this.src;
+                lightbox.style.display = "flex";
+            }
+        })
+        //关闭按钮
+        lbClose.onclick = ()=> lightbox.style.display = "none";
+        //点击黑色背景关闭
+        lightbox.onclick = function(e){
+            if(e.target === lightbox) lightbox.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>
